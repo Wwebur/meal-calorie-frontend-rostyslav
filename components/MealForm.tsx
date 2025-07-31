@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import React, { useState } from "react";
 import { getCalories } from "../lib/api";
 import { useAuthStore } from "../stores/authStore";
 import { useMealStore } from "../stores/mealStore";
@@ -23,7 +23,7 @@ export default function MealForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
-  const token = useAuthStore((s) => s.token);
+  const { token, user } = useAuthStore();
   const setResult = useMealStore((s) => s.setResult);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,7 +55,8 @@ export default function MealForm() {
     try {
       const { data } = await getCalories(
         { dish_name: form.dish_name, servings: Number(form.servings) },
-        token!
+        token!,
+        user?.email
       );
       setResult(data);
     } catch (err: any) {

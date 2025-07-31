@@ -12,17 +12,17 @@ import {
 } from "../components/ui/table";
 
 export default function MealHistoryTable() {
-  const token = useAuthStore((s) => s.token);
+  const { token, user } = useAuthStore();
   const { history, setHistory } = useMealHistoryStore();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!token) return;
     setLoading(true);
-    getMealHistory(token)
+    getMealHistory(token, user?.email)
       .then((res) => setHistory(res.data))
       .finally(() => setLoading(false));
-  }, [token, setHistory]);
+  }, [token, user?.email, setHistory]);
 
   if (loading) return <div>Loading...</div>;
   if (!history.length) return <div>No meal history yet.</div>;
@@ -44,8 +44,12 @@ export default function MealHistoryTable() {
             <TableRow key={idx}>
               <TableCell className="text-center">{meal.dish_name}</TableCell>
               <TableCell className="text-center">{meal.servings}</TableCell>
-              <TableCell className="text-center">{meal.calories_per_serving}</TableCell>
-              <TableCell className="text-center">{meal.total_calories}</TableCell>
+              <TableCell className="text-center">
+                {meal.calories_per_serving}
+              </TableCell>
+              <TableCell className="text-center">
+                {meal.total_calories}
+              </TableCell>
               <TableCell className="text-center">
                 {meal.date ? new Date(meal.date).toLocaleString() : ""}
               </TableCell>
